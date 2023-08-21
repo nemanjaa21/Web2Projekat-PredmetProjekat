@@ -45,6 +45,7 @@ namespace Online_Shop.Migrations
                     OrderTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeliveryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Approved = table.Column<bool>(type: "bit", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     DeliveryPrice = table.Column<int>(type: "int", nullable: false)
                 },

@@ -34,9 +34,8 @@ namespace Online_Shop.Service
             Order newOrder = _mapper.Map<CreateOrderDto, Order>(orderDto);
             newOrder.UserId = userId;
             newOrder.OrderTime = DateTime.Now;
-            newOrder.DeliveryTime = DateTime.Now.AddHours(1).AddMinutes(new Random().Next(60));
-            newOrder.DeliveryPrice = 200;
             newOrder.Status = Common.EOrderStatus.INPROGRESS;
+            newOrder.Approved = false;
 
             foreach (OrderProduct op in newOrder.OrderProducts)
             {
@@ -72,6 +71,18 @@ namespace Online_Shop.Service
                     }
                 }
             }
+            _orderRepository.SaveChanges();
+            return true;
+        }
+
+        public async Task<bool> ApproveOrder(int id)
+        {
+            Order o = await _orderRepository.GetOrderById(id);
+            if (o == null)
+                throw new Exception($"Order with ID: {id} doesn't exist.");
+            o.Approved = true;
+            o.DeliveryTime = o.OrderTime.AddHours(1).AddMinutes(new Random().Next(60));
+
             _orderRepository.SaveChanges();
             return true;
         }

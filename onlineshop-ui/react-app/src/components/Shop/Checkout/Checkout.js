@@ -2,6 +2,7 @@ import React, { useState, useRef, useContext } from "react";
 import { Modal, Button, TextField, Box, Typography } from "@mui/material";
 import { createOrder } from "../../../services/OrderService";
 import CartContext from "../../../contexts/cart-context";
+import PayPal from "../../PayPal/PayPal";
 
 const Checkout = ({ open, onClose }) => {
   const exceptionRead = (value) => value.split(":")[1].split("at")[0];
@@ -98,6 +99,14 @@ const Checkout = ({ open, onClose }) => {
             >
               Cancel
             </Button>
+          </Box>
+          <Box  sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}>
+              <PayPal data={data} onClose={onClose}/>
           </Box>
         </Box>
       </Box>

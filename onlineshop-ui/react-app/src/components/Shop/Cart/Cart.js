@@ -87,8 +87,8 @@ const Cart = ({ open, onClose }) => {
           </Table>
         </Box>
 
-        <Typography sx={{ color: "white" }}>Total price: {totalPrice} RSD</Typography>
-        <Typography sx={{ color: "white" }}>Delivery price: 200 RSD</Typography>
+        <Typography sx={{ color: "white" }}>Price: {totalPrice}$</Typography>
+        <Typography sx={{ color: "white" }}>Delivery price: 20$</Typography>
 
         <Box display="flex" justifyContent="center" alignItems="center">
           {hasItems && (

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import AuthContext from "../../contexts/auth-context";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import {
   Box,
@@ -25,19 +26,60 @@ import {
   getSalesmanInProgressOrders,
 } from "../../services/OrderService";
 import NavBar from "../NavBar/NavBar";
-import { denyOrder } from "../../services/OrderService";
+import { denyOrder, approveOrder } from "../../services/OrderService";
 
-function Row({ row, onDenyOrder  }) {
+function Row({ row, onDenyOrder, onApproveOrder }) {
   const [open, setOpen] = useState(false);
+  const [remainingTime, setRemainingTime] = useState(
+    calculateRemainingTime(row.deliveryTime)
+  );
   const authCtx = useContext(AuthContext);
   const role = authCtx.role;
   const exceptionRead = (value) => value.split(":")[1].split("at")[0];
 
   const isCustomer = role === "CUSTOMER";
 
+  const isSalesman = role === "SALESMAN";
+  console.log('eve ga', remainingTime);
+
+  function calculateRemainingTime(deliveryTime) {
+    const deliveryDate = new Date(deliveryTime);
+    const startDate = new Date();
+    const remainingTime = deliveryDate.getTime() - startDate.getTime();
+
+    const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+    const minutes = Math.floor(
+      (remainingTime % (1000 * 60 * 60)) / (1000 * 60)
+    );
+    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+    const formattedTime = `${hours}:${minutes
+      .toString()
+      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+    return formattedTime;
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newRemainingTime = calculateRemainingTime(row.deliveryTime);
+      setRemainingTime(newRemainingTime);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [row.deliveryTime]);
+
+  const handleApproveOrder = () => {
+    onApproveOrder(row.id);
+  };
+
   const handleDenyOrder = () => {
     onDenyOrder(row.id);
   };
+
+
 
   return (
     <React.Fragment>
@@ -51,20 +93,27 @@ function Row({ row, onDenyOrder  }) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row" sx={{ color: "white" }}> 
+        <TableCell component="th" scope="row" sx={{ color: "white" }}>
           {row.id}
         </TableCell>
         <TableCell align="center" sx={{ color: "white" }}>{row.comment}</TableCell>
         <TableCell align="center" sx={{ color: "white" }}>{row.address}</TableCell>
         <TableCell align="center" sx={{ color: "white" }}>{row.price}</TableCell>
         <TableCell align="center" sx={{ color: "white" }}>{row.orderTime.split(".")[0]}</TableCell>
-        <TableCell align="center" sx={{ color: "white" }}>{row.deliveryTime.split(".")[0]}</TableCell>
+        <TableCell align="center" sx={{ color: "white" }}>{row.approved && row.status !== 'DENIED' && remainingTime}</TableCell>
         <TableCell align="center" sx={{ color: "white" }}>{row.status}</TableCell>
         {isCustomer && row.status === 'INPROGRESS' &&
-        <TableCell align="center" sx={{ color: "white" }}><Button sx={{ ml: 2, mt: 1 }}
-        onClick={handleDenyOrder}
-        variant="contained"
-        color="secondary">Deny</Button></TableCell>
+          <TableCell align="center" sx={{ color: "white" }}><Button sx={{ ml: 2, mt: 1 }}
+            onClick={handleDenyOrder}
+            variant="contained"
+            color="error">Deny</Button></TableCell>
+        }
+
+        {isSalesman && row.approved === false &&
+          <TableCell align="center" sx={{ color: "white" }}><Button sx={{ ml: 2, mt: 1 }}
+            onClick={handleApproveOrder}
+            variant="contained"
+            color="success">Approve</Button></TableCell>
         }
       </TableRow>
       <TableRow>
@@ -91,7 +140,7 @@ function Row({ row, onDenyOrder  }) {
                       Amount
                     </TableCell>
                     <TableCell align="right" sx={{ color: "white" }}>
-                      Total price (RSD)
+                      Total price ($)
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -105,13 +154,13 @@ function Row({ row, onDenyOrder  }) {
                         {orderProduct.product.description}
                       </TableCell>
                       <TableCell align="center" sx={{ color: "white" }}>
-                        {orderProduct.product.price} RSD
+                        {orderProduct.product.price} $
                       </TableCell>
                       <TableCell align="center" sx={{ color: "white" }}>
                         x{orderProduct.amount}
                       </TableCell>
                       <TableCell align="right" sx={{ color: "white" }}>
-                        {orderProduct.amount * orderProduct.product.price} RSD
+                        {orderProduct.amount * orderProduct.product.price} $
                       </TableCell>
                     </TableRow>
                   ))}
@@ -159,6 +208,7 @@ const Orders = () => {
   const [change, setChange] = useState(false);
   const authCtx = useContext(AuthContext);
   const role = authCtx.role;
+  const navigate = useNavigate();
 
   const isAdmin = role === "ADMINISTRATOR";
   const isCustomer = role === "CUSTOMER";
@@ -175,6 +225,20 @@ const Orders = () => {
     }
   };
 
+
+
+  const handleApproveOrder = async (orderId) => {
+    try {
+      // Implement your logic to approve the order
+      const response = await approveOrder(orderId);
+      setChange(!change);
+      alert("You approve order succesfully!");
+    } catch (error) {
+      if (error) alert(exceptionRead(error.response.data));
+    }
+  };
+
+
   useEffect(() => {
     const fetchData = async () => {
       if (isAdmin) {
@@ -189,22 +253,22 @@ const Orders = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [change]);
 
   useEffect(() => {
-      const fetchData = async () => {
-        if (isSalesman) {
-          try {
-            const responseInProgress = await getSalesmanInProgressOrders();
-            console.log("ovaj ispis", responseInProgress.data);
-            setData(responseInProgress.data);
-            const responseDelivered = await getSalesmanDeliveredOrders();
-            setDelivered(responseDelivered);
-          } catch (error) {
-            if (error) alert(exceptionRead(error.response.data));
-            return;
-          }
+    const fetchData = async () => {
+      if (isSalesman) {
+        try {
+          const responseInProgress = await getSalesmanInProgressOrders();
+          console.log("ovaj ispis", responseInProgress.data);
+          setData(responseInProgress.data);
+          const responseDelivered = await getSalesmanDeliveredOrders();
+          setDelivered(responseDelivered);
+        } catch (error) {
+          if (error) alert(exceptionRead(error.response.data));
+          return;
         }
+      }
     };
     fetchData();
   }, []);
@@ -221,6 +285,7 @@ const Orders = () => {
           //   ...data,
           //   ...responseDelivered.data,
           // }));
+          setDelivered(responseDelivered);
         } catch (error) {
           if (error) alert(exceptionRead(error.response.data));
           return;
@@ -281,11 +346,12 @@ const Orders = () => {
               <TableBody>
                 {data.length > 0 &&
                   data.map((row) => <Row
-                  key={row.id}
-                  row={row}
-                  onDenyOrder={handleDenyOrder}
-                />)}
-                  {delivered.length > 0 &&
+                    key={row.id}
+                    row={row}
+                    onDenyOrder={handleDenyOrder}
+                    onApproveOrder={handleApproveOrder}
+                  />)}
+                {delivered.length > 0 &&
                   delivered.map((row) => <Row key={row.id} row={row} />)}
               </TableBody>
             </Table>

@@ -9,6 +9,7 @@ import Verification from "../components/Verification/Verification.js";
 import Orders from "../components/Orders/Orders.js";
 import Product from '../components/Product/Product.js';
 import Shop from "../components/Shop/Shop.js";
+import Map from "../components/Map/Map.js";
 
 const AppRoutes = () => {
   const authCtx = useContext(AuthContext);
@@ -41,6 +42,10 @@ const AppRoutes = () => {
       <Route 
         path="/shop" 
         element={isLoggedIn ? <Shop /> : <Login />} 
+      />
+      <Route 
+        path="/map" 
+        element={isLoggedIn ? <Map /> : <Login />} 
       />
     </Routes>
   );

@@ -97,5 +97,15 @@ namespace Online_Shop.Controllers
                 return BadRequest();
             return Ok();
         }
+
+        [HttpPut("approve-order/{id}")]
+        [Authorize(Roles = "SALESMAN", Policy = "VerifiedUserOnly")]
+        public async Task<IActionResult> ApproveOrder(int id)
+        {
+            bool temp = await _service.ApproveOrder(id);
+            if (!temp)
+                return BadRequest();
+            return Ok();
+        }
     }
 }

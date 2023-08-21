@@ -3,7 +3,7 @@ import CartContext from "../../contexts/cart-context";
 import { createOrder } from "../../services/OrderService";
 import { useNavigate } from "react-router-dom";
 
-const PayPal = ({ data }) => {
+const PayPal = ({ data, onClose }) => {
   const exceptionRead = (value) => value.split(":")[1].split("at")[0];
   const cartCtx = useContext(CartContext);
   const totalPrice = cartCtx.totalPrice;
@@ -44,10 +44,10 @@ const PayPal = ({ data }) => {
       const payPalOrder = async () => {
         try {
           const response = await createOrder(data);
-          navigate("/shop");
+          onClose();
 
         } catch (error) {
-          if (error) alert(exceptionRead(error.response.data));
+          if (error) alert(error.response.data);
           return;
         }
       };

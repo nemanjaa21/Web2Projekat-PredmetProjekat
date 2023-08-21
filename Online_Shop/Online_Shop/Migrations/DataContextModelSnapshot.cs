@@ -35,6 +35,9 @@ namespace Online_Shop.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<bool>("Approved")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 

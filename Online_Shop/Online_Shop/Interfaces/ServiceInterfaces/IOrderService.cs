@@ -11,5 +11,6 @@ namespace Online_Shop.Interfaces.ServiceInterfaces
         Task<OrderDto> GetOrderById(int id);
         Task<OrderDto> CreateOrder(int userId, CreateOrderDto orderDto);
         Task<bool> DenyOrder(int id);
+        Task<bool> ApproveOrder(int id);
     }
 }
