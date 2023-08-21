@@ -18,7 +18,7 @@ const Cart = ({ open, onClose }) => {
   const [isCheckout, setIsCheckout] = useState(false);
   const cartCtx = useContext(CartContext);
   console.log(cartCtx.items);
-  const totalAmount = cartCtx.totalAmount;
+  const totalPrice = cartCtx.totalPrice;
   const hasItems = cartCtx.items.length > 0;
 
   const cartItemRemoveHandler = (id) => {
@@ -87,7 +87,7 @@ const Cart = ({ open, onClose }) => {
           </Table>
         </Box>
 
-        <Typography sx={{ color: "white" }}>Total amount: {totalAmount} RSD</Typography>
+        <Typography sx={{ color: "white" }}>Total price: {totalPrice} RSD</Typography>
         <Typography sx={{ color: "white" }}>Delivery price: 200 RSD</Typography>
 
         <Box display="flex" justifyContent="center" alignItems="center">
