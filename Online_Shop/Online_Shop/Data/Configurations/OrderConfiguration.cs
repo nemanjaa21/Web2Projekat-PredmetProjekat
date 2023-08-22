@@ -13,7 +13,7 @@ namespace Online_Shop.Data.Configurations
             builder.HasKey(o => o.Id);
             builder.Property(o => o.Id).ValueGeneratedOnAdd();
 
-            builder.Property(o => o.Address).IsRequired().HasMaxLength(30);
+            builder.Property(o => o.Address).IsRequired();
 
 
             builder.Property(o => o.Status).HasConversion(new EnumToStringConverter<EOrderStatus>());

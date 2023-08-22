@@ -23,7 +23,7 @@ namespace Online_Shop.Repository
 
             try
             {
-                dc.SaveChanges();
+                await dc.SaveChangesAsync();
                 
                 return order;
             }

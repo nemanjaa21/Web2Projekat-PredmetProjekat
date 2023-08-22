@@ -9,7 +9,7 @@ namespace Online_Shop.Models
 
         public string? Comment { get; set; }
 
-        [Required, MaxLength(30)]
+        [Required]
         public string? Address { get; set; }
 
         public double Price { get; set; }
