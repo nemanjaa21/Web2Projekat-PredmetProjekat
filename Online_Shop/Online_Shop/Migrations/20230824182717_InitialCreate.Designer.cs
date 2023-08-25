@@ -12,7 +12,7 @@ using Online_Shop.Data;
 namespace Online_Shop.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230821135906_InitialCreate")]
+    [Migration("20230824182717_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -35,8 +35,7 @@ namespace Online_Shop.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Approved")
                         .HasColumnType("bit");

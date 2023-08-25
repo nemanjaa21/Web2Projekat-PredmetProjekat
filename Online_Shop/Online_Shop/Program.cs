@@ -58,9 +58,11 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
-// drugi nacin umesto addscoped
+// drugi nacin umesto addscoped su singleton i transient
 
-
+// addscoped instanca se kreira za svaki http zahtev i deli se izmedju svih resursa
+// transient - instanca se kreira svaki put kad je potrebna
+// singleton - instanca se kreira jednom za zivotni vek cele aplikacije  i deli se izmedju svih resursa
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOrderService, OrderService>();

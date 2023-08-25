@@ -40,7 +40,7 @@ namespace Online_Shop.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false),
                     OrderTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeliveryTime = table.Column<DateTime>(type: "datetime2", nullable: false),

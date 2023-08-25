@@ -86,9 +86,10 @@ namespace Online_Shop.Service
         {
             List<User> users = await userRepo.GetAll();
 
-            if (String.IsNullOrEmpty(registerDto.FirstName) || String.IsNullOrEmpty(registerDto.LastName) || String.IsNullOrEmpty(registerDto.Username) ||
-                String.IsNullOrEmpty(registerDto.Email) || String.IsNullOrEmpty(registerDto.Address) ||
-                String.IsNullOrEmpty(registerDto.Password) || String.IsNullOrEmpty(registerDto.RepeatPassword) || String.IsNullOrEmpty(registerDto.Type.ToString()))
+            if (String.IsNullOrEmpty(registerDto.FirstName) || String.IsNullOrEmpty(registerDto.LastName)
+                || String.IsNullOrEmpty(registerDto.Username) || String.IsNullOrEmpty(registerDto.Email)
+                || String.IsNullOrEmpty(registerDto.Address) || String.IsNullOrEmpty(registerDto.Password)
+                || String.IsNullOrEmpty(registerDto.RepeatPassword) || String.IsNullOrEmpty(registerDto.Type.ToString()))
                 throw new BadRequestException($"You must fill in all fields for registration!");
 
             if (users.Any(u => u.Username == registerDto.Username))
@@ -105,16 +106,9 @@ namespace Online_Shop.Service
             {
                 using (var memoryStream = new MemoryStream())
                 {
-
-
                     registerDto.ImageForm.CopyTo(memoryStream);
-
-
                     var imageBytes = memoryStream.ToArray();
-
-
                     newUser.Image = imageBytes;
-
                 }
             }
             newUser.Password = BCrypt.Net.BCrypt.HashPassword(newUser.Password);
@@ -124,12 +118,7 @@ namespace Online_Shop.Service
                 newUser.Verification = EVerificationStatus.INPROGRESS;
             else
                 newUser.Verification = EVerificationStatus.ACCEPTED;
-
-
-
             UserDto dto = imapper.Map<User, UserDto>(await userRepo.Register(newUser));
-
-
             return dto;
         }
 

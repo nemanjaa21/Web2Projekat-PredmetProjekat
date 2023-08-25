@@ -24,13 +24,16 @@ namespace Online_Shop.Service
             };
 
 
-            mail.From.Add(new MailboxAddress(_configuration["MailSettings:DisplayName"], _configuration["MailSettings:From"]));
+            mail.From.Add(new MailboxAddress(_configuration["MailSettings:DisplayName"],
+                _configuration["MailSettings:From"]));
             mail.To.Add(MailboxAddress.Parse(email));
 
             SmtpClient smtp = new SmtpClient();
-            await smtp.ConnectAsync(_configuration["MailSettings:Host"], int.Parse(_configuration["MailSettings:Port"]!), SecureSocketOptions.Auto);
+            await smtp.ConnectAsync(_configuration["MailSettings:Host"], 
+                int.Parse(_configuration["MailSettings:Port"]!), SecureSocketOptions.Auto);
             string s = _configuration["MailSettings:From"] + " " + _configuration["MailSettings:Password"];
-            await smtp.AuthenticateAsync(_configuration["MailSettings:From"], _configuration["MailSettings:Password"]);
+            await smtp.AuthenticateAsync(_configuration["MailSettings:From"],
+                _configuration["MailSettings:Password"]);
             await smtp.SendAsync(mail);
             await smtp.DisconnectAsync(true);
         }
